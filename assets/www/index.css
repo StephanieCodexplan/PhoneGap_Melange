@@ -39,7 +39,7 @@ div#view_index {
 	margin				: 0px 0px 0px 0px !important;
 	height				: 100% !important;
 	width				: 100% !important; 
-	background-color	: #f4f5f4; 
+	background-color	: #f2f3f1; 
 	z-index				: 10; 
 }
 
@@ -53,7 +53,7 @@ div#view_splashscreen {
 	z-index				: 1; 
 }
 
-div#view_config {
+div#view_config #view_getConfig {
 	Position			: relative;
 	padding				: 0px 0px 0px 0px !important;
 	margin				: 0px 0px 0px 0px !important;

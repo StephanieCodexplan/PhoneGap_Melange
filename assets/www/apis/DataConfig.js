@@ -13,7 +13,7 @@ function DataConfig() {
     
     this.lastClockInDate	= 0;
     
-    this.urlConfig			= 'http://5.48.124.192:4200/PhoneGateway_WebWrapper/';
+    this.urlConfig			= 'http://clockin.no-ip.org/PhoneGateway_WebWrapper/';
     
     this.employeeName		= '';
     this.employeeFirstname	= '';

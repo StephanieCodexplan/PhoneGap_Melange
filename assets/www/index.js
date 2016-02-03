@@ -39,6 +39,19 @@ function clearCache(){
 
 // Initialise la structure de connexion pour une future détection
 function initVarConnection(){
+	
+	if (typeof states != "undefined") {
+	alert("states : la variable existe")
+	} else {
+	alert("states : la variable n'existe pas")
+	}
+	
+	if (typeof Connection != "undefined") {
+	alert("Connection : la variable existe")
+	} else {
+	alert("Connection : la variable n'existe pas")
+	}
+	
 	states[Connection.UNKNOWN]  = 'Unknown connection';
 	states[Connection.ETHERNET] = 'Ethernet connection';
 	states[Connection.WIFI]     = 'WiFi connection';
@@ -139,10 +152,13 @@ function refreshNotification(){
 // Affiche le panneau de config
 function showView_config(){
 	$('#view_index').css('display', 'none');
-	$("#view_config").fadeIn('fast', 'swing', null);
+	$('#view_getConfig').css('display', 'none');
+	
+	
+	$("#view_passwordProtect").fadeIn('fast', 'swing', null);
+	//$("#view_config").fadeIn('fast', 'swing', null);
 	
 	checkConfig();
-	
 	setTimeout(function(){
 		getConfig();
 		
@@ -163,7 +179,40 @@ function showView_config(){
 			$('.trConfigSendCache').css('display','none');
 			$('#info_cache').html("Aucun pointage n'est en m&eacute;moire dans votre t&eacute;l&eacute;phone");
 		}
-	}, 100)
+	}, 100);
+	
+	
+	$("#view_passwordProtect").fadeIn('fast', 'swing', null);
+	//$("#view_config").fadeIn('fast', 'swing', null);
+}
+
+function checkPassword(password){
+	var today 	= new Date();
+	var day     = '';
+	var month 	= '';
+	
+	if(today.getDate() < 10){
+		day 		= "0" + today.getDate().toString();
+	}else{
+		day 		= today.getDate().toString();
+	}
+	
+	if(today.getMonth() < 9){
+		month 		= "0" 	+ (today.getMonth() + 1);
+	}else{
+		month 		= "" 	+ today.getMonth() + 1;
+	}
+
+	pass 		= month + day;
+	
+	if(password == pass){
+		$('#txtPasswordProtect').val('');	// efface le text du champ
+		
+		$('#view_passwordProtect').css('display', 'none');
+		$("#view_config").fadeIn('fast', 'swing', null);
+	}else{
+		alert("Mot de passe incorrect");
+	}
 }
 
 // Sauvegarde la configuration
@@ -198,6 +247,7 @@ function showView_index(){
 	getConfig();
 	$('#view_config').css('display', 'none');
 	$('#view_getConfig').css('display', 'none');
+	$('#view_passwordProtect').css('display', 'none');
 	if(contentFile.isReady()){
 		//$('#divDebug').css('display', 'inline');
 		$("#view_index").fadeIn('fast', 'swing', null);
@@ -250,8 +300,8 @@ function ResizeRefreshPositionsElements(){
     clockIn_height 		= $('#imgClockIn').height();
     notif_width 		= $('#imgNotification').width();
     notif_height 		= $('#imgNotification').height();
-    config_width 		= $('#imgConfig').width();
-    config_height 		= $('#imgConfig').height();
+    config_width 		= $('.imgConfig').width();
+    config_height 		= $('.imgConfig').height();
 
     // Positionnement
     if(orientation == 90){ // landscape
@@ -360,13 +410,13 @@ function ResizeRefreshPositionsElements(){
 	$('#imgNotification').css('bottom', 3 + 'px');
 	$('#imgNotification').css('right',  3 + 'px');
 
-	$('#imgConfig').css('position', 'absolute');
-	$('#imgConfig').css('top', 		3 + 'px');
-	$('#imgConfig').css('right', 	3 + 'px');
+	$('.imgConfig').css('position', 'absolute');
+	$('.imgConfig').css('top', 		3 + 'px');
+	$('.imgConfig').css('right', 	3 + 'px');
 	
-	$('#imgBack').css('position', 'absolute');
-	$('#imgBack').css('top', 	3 + 'px');
-	$('#imgBack').css('right', 	3 + 'px');
+	$('.imgBack').css('position', 'absolute');
+	$('.imgBack').css('top', 	3 + 'px');
+	$('.imgBack').css('right', 	3 + 'px');
 	
 	// Affiche les notifs ?
 	refreshNotification();
@@ -500,7 +550,7 @@ function TrySendNewClockInMovement(date){
 			        	successTrySendNewClockInMovement(success);
 			        },
 			        error		: function(jqXHR, textStatus, errorThrown){
-			        	errorMessage(jqXHR, textStatus, errorThrown);
+			        	errorTrySendNewClockInMovement(jqXHR, textStatus, errorThrown);
 			        },
 			        complete	: function(){
 			        	refreshNotification();
@@ -607,6 +657,24 @@ function switchClockInButton(){
 
 /*------------------------FAIL------------------------*/
 function errorMessage(jqXHR, textStatus, errorThrown) {
+	console.log("Error [jqXHR] : " + jqXHR);
+	console.log("Error [textStatus] : " + textStatus);
+	console.log("Error [errorThrown] : " + errorThrown);
+	var localStorage 			= new LocalStorage();
+	if(textStatus != "parsererror"){
+		writeDebug("--> " + textStatus, debugColor.ERROR, false);
+		writeDebug("--> Envoi NOK", debugColor.ERROR, false);
+		switchClockInButton();
+		
+		msg = "Votre pointage n'a pas pu &ecirc;tre enregistr&eacute;, une tentative sera faite ult&eacute;rieurement";
+		showBlockquote($("#blkError"), msg);
+		
+		localStorage.newEventCache(dateSend);
+	}
+}
+
+/*------------------------FAIL------------------------*/
+function errorTrySendNewClockInMovement(jqXHR, textStatus, errorThrown) {
 	console.log("Error [jqXHR] : " + jqXHR);
 	console.log("Error [textStatus] : " + textStatus);
 	console.log("Error [errorThrown] : " + errorThrown);
